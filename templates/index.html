@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM客户跟进系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+        
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        
+        .section h2 {
+            color: #444;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        table th {
+            background-color: #f8f9fa;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #444;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        table td {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .badge-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .dashboard-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 CRM客户跟进系统</h1>
+            <p>轻松管理客户信息，不错过任何跟进机会</p>
+        </header>
+        
+        <!-- 统计卡片 -->
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <h3>总客户数</h3>
+                <div class="stat-number">{{ stats.total_clients }}</div>
+                <p>累计管理的客户数量</p>
+            </div>
+            
+            <div class="stat-card">
+                <h3>本周需跟进</h3>
+                <div class="stat-number">{{ stats.upcoming_followups }}</div>
+                <p>未来7天需要跟进的客户</p>
+            </div>
+            
+            <div class="stat-card">
+                <h3>今日日期</h3>
+                <div class="stat-number">{{ today }}</div>
+                <p>当前系统日期</p>
+            </div>
+        </div>
+        
+        <!-- 添加客户表单 -->
+        <div class="section">
+            <h2>➕ 添加新客户</h2>
+            <form action="/add_client" method="post" class="form-grid">
+                <div class="form-group">
+                    <label for="name">客户姓名 *</label>
+                    <input type="text" id="name" name="name" required placeholder="请输入客户姓名">
+                </div>
+                
+                <div class="form-group">
+                    <label for="company">公司名称</label>
+                    <input type="text" id="company" name="company" placeholder="请输入公司名称">
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">联系电话</label>
+                    <input type="tel" id="phone" name="phone" placeholder="请输入联系电话">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">电子邮箱</label>
+                    <input type="email" id="email" name="email" placeholder="请输入电子邮箱">
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn">添加客户</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- 添加跟进记录 -->
+        <div class="section">
+            <h2>📝 添加跟进记录</h2>
+            <form action="/add_followup" method="post">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="client_id">客户ID *</label>
+                        <input type="number" id="client_id" name="client_id" required placeholder="请输入客户ID">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="next_date">下次跟进日期 *</label>
+                        <input type="date" id="next_date" name="next_date" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="note">跟进内容 *</label>
+                        <textarea id="note" name="note" rows="3" required placeholder="请输入跟进内容..."></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn">添加跟进记录</button>
+            </form>
+        </div>
+        
+        <!-- 客户列表 -->
+        <div class="section">
+            <h2>👥 客户列表 (共{{ clients|length }}位客户)</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>客户姓名</th>
+                            <th>公司</th>
+                            <th>联系方式</th>
+                            <th>跟进记录数</th>
+                            <th>最后跟进</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for client in clients %}
+                        <tr>
+                            <td>{{ client.id }}</td>
+                            <td><strong>{{ client.name }}</strong></td>
+                            <td>{{ client.company or "未填写" }}</td>
+                            <td>
+                                {% if client.phone %}{{ client.phone }}<br>{% endif %}
+                                {% if client.email %}{{ client.email }}{% endif %}
+                            </td>
+                            <td>
+                                <span class="badge {% if client.followup_count > 0 %}badge-success{% else %}badge-warning{% endif %}">
+                                    {{ client.followup_count }} 条
+                                </span>
+                            </td>
+                            <td>{{ client.last_followup or "无记录" }}</td>
+                            <td class="action-buttons">
+                                <button onclick="setClientId({{ client.id }})" class="btn">添加跟进</button>
+                                <a href="/delete_client/{{ client.id }}" 
+                                   onclick="return confirm('确定要删除客户 {{ client.name }} 吗？')" 
+                                   class="btn btn-danger">删除</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 近期跟进提醒 -->
+        {% if upcoming %}
+        <div class="section">
+            <h2>⏰ 近期跟进提醒</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>客户</th>
+                            <th>公司</th>
+                            <th>跟进内容</th>
+                            <th>下次跟进日期</th>
+                            <th>状态</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for followup in upcoming %}
+                        <tr>
+                            <td><strong>{{ followup.client_name }}</strong></td>
+                            <td>{{ followup.company }}</td>
+                            <td>{{ followup.note }}</td>
+                            <td>
+                                <span class="badge badge-warning">{{ followup.next_date }}</span>
+                            </td>
+                            <td>
+                                {% if followup.next_date <= today %}
+                                <span class="badge badge-danger">⚠️ 已到期</span>
+                                {% else %}
+                                <span class="badge badge-success">待跟进</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- 公司分布 -->
+        {% if stats.top_companies %}
+        <div class="section">
+            <h2>🏢 公司分布 (TOP {{ stats.top_companies|length }})</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>公司名称</th>
+                            <th>客户数量</th>
+                            <th>占比</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for company in stats.top_companies %}
+                        <tr>
+                            <td>{{ company.name }}</td>
+                            <td>{{ company.count }}</td>
+                            <td>
+                                <div style="background-color: #e9ecef; border-radius: 5px; height: 20px;">
+                                    <div style="background-color: #667eea; width: {{ (company.count / stats.total_clients * 100)|round }}%; height: 100%; border-radius: 5px;"></div>
+                                </div>
+                                {{ (company.count / stats.total_clients * 100)|round }}%
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="footer">
+            <p>CRM客户跟进系统 &copy; 2024 | 使用FastAPI + SQLite构建</p>
+            <p>
+                <a href="/health" style="color: #667eea;">系统状态</a> | 
+                <a href="/api/stats" style="color: #667eea;">API数据</a>
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // 自动填充客户ID到跟进表单
+        function setClientId(clientId) {
+            document.getElementById('client_id').value = clientId;
+            document.getElementById('client_id').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // 设置默认日期为明天
+        document.addEventListener('DOMContentLoaded', function() {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const formattedDate = tomorrow.toISOString().split('T')[0];
+            document.getElementById('next_date').value = formattedDate;
+        });
+    </script>
+</body>
+</html>
