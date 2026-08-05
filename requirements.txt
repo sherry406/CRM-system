@@ -1,0 +1,33 @@
+annotated-doc==0.0.4
+annotated-types==0.7.0
+anyio==4.12.0
+certifi==2025.11.12
+charset-normalizer==3.4.4
+click==8.3.1
+colorama==0.4.6
+fastapi==0.123.0
+h11==0.16.0
+idna==3.11
+Jinja2==3.1.6
+MarkupSafe==3.0.3
+pydantic==2.12.5
+pydantic_core==2.41.5
+python-dotenv==1.2.1
+python-multipart==0.0.20
+requests==2.32.5
+starlette==0.50.0
+typing-inspection==0.4.2
+typing_extensions==4.15.0
+urllib3==2.5.0
+uvicorn==0.38.0
+
+#以上是首次启动成功时的依赖清单，有些版本很新，不一定所有系统都兼容，现在是第二次启动，失败，所以重新安装依赖和虚拟环境，当下我的服务器版本和原来的不一样了：
+
+# CRM客户管理系统依赖
+# 稳定版本，兼容Python 3.8+
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+jinja2==3.1.2
+python-dotenv==1.0.0
+requests==2.31.0
+python-multipart==0.0.6
